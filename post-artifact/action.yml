@@ -17,7 +17,7 @@ runs:
       id: compose
       run: |
         echo "Thank you for your contribution @${{ github.actor }}" > _msg.txt
-        echo ":rocket:!" Your ${{ inputs.artifact-name }} is ready " >> _msg.txt
+        echo ":rocket:! Your ${{ inputs.artifact-name }} is ready " >> _msg.txt
         echo "for download :point_right: [here](" >> _msg.txt
         echo "https://github.com/${{ github.repository }}/actions/" >> _msg.txt
         echo "runs/${{ github.run_id }}/artifacts/" >> _msg.txt 
