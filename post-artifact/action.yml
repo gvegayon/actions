@@ -27,5 +27,5 @@ runs:
     - name: Post comment preview
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        cat _msg.txt | gh pr comment ${{ github.event.number }} --body -
+        gh pr comment ${{ github.event.number }} --body-file _msg.txt
       shell: bash
