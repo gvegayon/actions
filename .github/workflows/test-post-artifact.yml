@@ -21,12 +21,12 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         name: Upload artifact
+        id: readme
         with:
-          name: preview
           path: './README.md'
 
       - name: Post the artifact
         uses: ./post-artifact
         with:
-          job-dependency: build-artifact
-          artifact-name: 'preview'
+          artifact-id: readme
+          artifact-name: 'README file'

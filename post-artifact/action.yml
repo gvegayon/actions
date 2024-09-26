@@ -17,5 +17,5 @@ runs:
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         gh pr comment ${{ github.event.number }} --body \
-          "Thank you for your contribution @${{ github.triggering_actor }}:rocket:! Your ${{ inputs.artifact-name }} is ready to preview :point_right: [here](https://github.com/${{github.repository}}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}) :point_left:!"
+          "Thank you for your contribution @${{ github.triggering_actor }}:rocket:! Your ${{ inputs.artifact-name }} is ready for download :point_right: [here](https://github.com/${{github.repository}}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}) :point_left:!"
       shell: bash
