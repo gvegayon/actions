@@ -22,6 +22,7 @@ runs:
         echo "https://github.com/${{ github.repository }}/actions/" >> _msg.txt
         echo "runs/${{ github.run_id }}/artifacts/" >> _msg.txt 
         echo "${{ inputs.artifact-id }}) :point_left:!" >> _msg.txt
+      shell: bash
         
     - name: Post comment preview
       if: ${{ github.event_name == 'pull_request' }}
