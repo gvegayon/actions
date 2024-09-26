@@ -18,7 +18,7 @@ jobs:
           path: './README.md'
 
       - name: Post the artifact
-        uses: ./post-artifact@main
+        uses: ./post-artifact
         with:
           job-dependency: build-artifact
           artifact-name: 'preview'
