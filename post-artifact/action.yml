@@ -10,17 +10,11 @@ inputs:
     required: false
     default: 'artifact'
 runs:
-  using: composite
-  needs: ${{ inputs.job-dependency }}
-  permissions:
-    contents: read
-    pull-requests: write
-  env:
-    GH_TOKEN: ${{ github.token }}
-    steps:
+  using: 'composite'
+  steps:
 
-      - name: Post comment preview
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          gh pr comment ${{ github.event.number }} --body \
-            "Thank you for your contribution @${{ github.triggering_actor }}:rocket:! Your ${{ inputs.artifact-name }} is ready to preview :point_right: [here](https://github.com/${{github.repository}}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}) :point_left:!"
+    - name: Post comment preview
+      if: ${{ github.event_name == 'pull_request' }}
+      run: |
+        gh pr comment ${{ github.event.number }} --body \
+          "Thank you for your contribution @${{ github.triggering_actor }}:rocket:! Your ${{ inputs.artifact-name }} is ready to preview :point_right: [here](https://github.com/${{github.repository}}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}) :point_left:!"
