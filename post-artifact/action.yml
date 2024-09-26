@@ -13,9 +13,18 @@ runs:
   using: 'composite'
   steps:
 
+    - name: Compose message
+      id: compose
+      run: |
+        echo "Thank you for your contribution @${{ github.actor }}" > _msg.txt
+        echo ":rocket:!" Your ${{ inputs.artifact-name }} is ready " >> _msg.txt
+        echo "for download :point_right: [here](" >> _msg.txt
+        echo "https://github.com/${{ github.repository }}/actions/" >> _msg.txt
+        echo "runs/${{ github.run_id }}/artifacts/" >> _msg.txt 
+        echo "${{ inputs.artifact-id }}) :point_left:!" >> _msg.txt
+        
     - name: Post comment preview
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        gh pr comment ${{ github.event.number }} --body \
-          "Thank you for your contribution @${{ github.triggering_actor }}:rocket:! Your ${{ inputs.artifact-name }} is ready for download :point_right: [here](https://github.com/${{github.repository}}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}) :point_left:!"
+        cat _msg.txt | gh pr comment ${{ github.event.number }} --body -
       shell: bash
