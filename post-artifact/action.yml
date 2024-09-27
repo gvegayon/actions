@@ -72,7 +72,7 @@ runs:
             file.write(id)
 
         with (open(fn+'_found', 'w')) as file:
-            if (id == ''):
+            if id == '':
                 file.write('false')
             else:
                 file.write('true')
@@ -92,6 +92,7 @@ runs:
     - name: Add comment
       if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'false' }}
       run: |
+        echo "The value of FOUND and id is ${{ steps.set-env.outputs.FOUND }} and ${{ steps.set-env.outputs.ID }}"
         gh pr comment -R ${{ github.repository }} \
           ${{ github.event.number }} -b "${{ steps.set-env.outputs.MSG }}"
       shell: bash
@@ -99,6 +100,7 @@ runs:
     - name: Update comment
       if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'true' }}
       run: |
+        echo "The value of FOUND and id is ${{ steps.set-env.outputs.FOUND }} and ${{ steps.set-env.outputs.ID }}"
         gh api \
           --method PATCH \
           -H "Accept: application/vnd.github+json" \
