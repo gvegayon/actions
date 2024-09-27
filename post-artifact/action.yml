@@ -33,8 +33,8 @@ runs:
 
     - name: Get comment preview
       run: |
-        import os
         import json
+        import re
 
         def main(json_comments) -> str:
 
@@ -51,7 +51,12 @@ runs:
             for i in range(len(data['comments'])):
                 body = data['comments'][i]['body']
                 auth = data['comments'][i]['author']['login']
-                id   = data['comments'][i]['id']
+                id   = re.match(r'\d+$', data['comments'][i]['url'])
+
+                if !match:
+                    return ''
+
+                id = match.group()
 
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
@@ -60,8 +65,17 @@ runs:
                     return id
 
             return ''
-        with (open('_PR_COMMENT_ID-${{ github.sha }}', 'w')) as file:
-            file.write(main('_events-${{ github.sha }}.json'))
+
+        id = main('_events-${{ github.sha }}.json')
+        fn = '_ID-${{ github.sha }}'
+        with (open(fn, 'w')) as file:
+            file.write(id)
+
+        with (open(fn+'_found', 'w')) as file:
+            if (id == ''):
+                file.write('false')
+            else:
+                file.write('true')
 
       shell: python {0}
 
@@ -69,13 +83,21 @@ runs:
       id: set-env
       run: |
         echo "MSG=$(cat _msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
-        echo "ID=$(cat _PR_COMMENT_ID-${{ github.sha }})" >> $GITHUB_OUTPUT
+        echo "ID=$(cat _ID-${{ github.sha }})" >> $GITHUB_OUTPUT
+        echo "FOUND=$(cat _ID-${{ github.sha }}_found)" >> $GITHUB_OUTPUT
       shell: bash
 
     # See:
     # https://docs.github.com/en/rest/issues/comments?apiVersion=2022-11-28#update-an-issue-comment
-    - name: Post comment preview
-      if: ${{ github.event_name == 'pull_request' }}
+    - name: Add comment
+      if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'false' }}
+      run: |
+        gh pr comment -R ${{ github.repository }} \
+          ${{ github.event.number }} -b "${{ steps.set-env.outputs.MSG }}"
+      shell: bash
+    
+    - name: Update comment
+      if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'true' }}
       run: |
         gh api \
           --method PATCH \
