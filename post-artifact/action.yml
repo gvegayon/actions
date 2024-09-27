@@ -27,7 +27,8 @@ runs:
     - name: Get the event
       run: |
         gh pr view -R ${{ github.repository }} \
-          ${{ github.event.number }} -c --json body > _events.json
+          ${{ github.event.number }} -c --json comments > \
+          _events-${{ github.sha }}.json
       shell: bash
 
     - name: Get comment preview
@@ -43,6 +44,9 @@ runs:
 
             print(data)
 
+            if (data['comments'] == []):
+                return ''
+
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
                 body = data['comments'][i]['body']
@@ -57,7 +61,7 @@ runs:
 
             return ''
         with (open('_PR_COMMENT_ID', 'w')) as file:
-            file.write(main('_events.json'))
+            file.write(main('_events-${{ github.sha }}.json'))
 
       shell: python {0}
 
