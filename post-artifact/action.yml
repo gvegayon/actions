@@ -68,8 +68,8 @@ runs:
     - name: Putting the contents of _msg.txt into an environment var
       id: set-env
       run: |
-        MSG=$(cat _msg-${{ github.sha }}.txt) >> $GITHUB_OUTPUT
-        COMMENT_ID=$(cat _PR_COMMENT_ID-${{ github.sha }}) >> $GITHUB_OUTPUT
+        echo "MSG=$(cat _msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
+        echo "ID=$(cat _PR_COMMENT_ID-${{ github.sha }})" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Post comment preview
@@ -80,7 +80,7 @@ runs:
           -f query='
           mutation UpdateIssueComment {
             updateIssueComment(input: {
-              id: "${{ steps.set-env.outputs.COMMENT_ID }}",
+              id: "${{ steps.set-env.outputs.ID }}",
               body: "${{ steps.compose.outputs.MSG }}"
             }) {
               issueComment {
