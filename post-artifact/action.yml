@@ -54,6 +54,7 @@ runs:
 
                 print(f"url: {url}")
                 print(f"match: {match}")
+                print(f"auth: {auth}")
 
                 if not match:
                     continue
