@@ -49,7 +49,11 @@ runs:
             for i in range(len(data['comments'])):
                 body = data['comments'][i]['body']
                 auth = data['comments'][i]['author']['login']
-                match = re.search(r'\d+$', data['comments'][i]['url'])
+                url =  data['comments'][i]['url']
+                match = re.search(r'\d+$', url)
+
+                print(f"url: {url}")
+                print(f"match: {match}")
 
                 if not match:
                     continue
