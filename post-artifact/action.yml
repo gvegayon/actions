@@ -52,7 +52,7 @@ runs:
                 match = re.search(r'\d+$', data['comments'][i]['url'])
 
                 if not match:
-                    return ''
+                    continue
 
                 id = match.group()
 
