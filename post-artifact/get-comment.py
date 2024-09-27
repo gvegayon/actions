@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 
 def main(json_comments):
@@ -17,8 +18,11 @@ def main(json_comments):
         # for the expression "Thank you for your contribution"
         # if found, print the author and the body of the comment
         if "Your preview" in body and auth == 'github-actions':
-            print(id)
+            os.environ['COMMENT_ID'] = str(id)
             return 0
+
+        # Set id via environment variable
+        
     
     print('null')
     return 0
