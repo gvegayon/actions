@@ -41,6 +41,8 @@ runs:
             with open(json_comments, 'r') as file:
                 data = json.load(file)
 
+            print(data)
+
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
                 body = data['comments'][i]['body']
