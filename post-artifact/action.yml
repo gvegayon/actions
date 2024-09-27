@@ -29,7 +29,7 @@ runs:
         gh pr view -R ${{ github.repository }} \
           ${{ github.event.number }} -c --json body > _events.json
 
-        python src/get-comment.py _events.json
+        python get-comment.py _events.json
       shell: bash
 
     - name: Post comment preview
