@@ -75,7 +75,6 @@ runs:
     - name: Post comment preview
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        cat _PR_COMMENT_ID
         gh api -H "Accept: application/vnd.github+json" \
           ${{ github.repository}} \
           -f query='
