@@ -16,12 +16,12 @@ runs:
     - name: Compose message
       id: compose
       run: |
-        echo -n "Thank you for your contribution @${{ github.actor }}"> _msg.txt
-        echo -n ":rocket:! Your ${{ inputs.artifact-name }} is ready ">>_msg.txt
-        echo -n "for download :point_right: [here](" >> _msg.txt
-        echo -n "https://github.com/${{ github.repository }}/actions/">>_msg.txt
-        echo -n "runs/${{ github.run_id }}/artifacts/" >> _msg.txt 
-        echo -n "${{ inputs.artifact-id }}) :point_left:!" >> _msg.txt
+        echo -n "Thank you for your contribution @${{ github.actor }}"> _msg-${{ github.sha }}.txt
+        echo -n ":rocket:! Your ${{ inputs.artifact-name }} is ready ">>_msg-${{ github.sha }}.txt
+        echo -n "for download :point_right: [here](" >> _msg-${{ github.sha }}.txt
+        echo -n "https://github.com/${{ github.repository }}/actions/">>_msg-${{ github.sha }}.txt
+        echo -n "runs/${{ github.run_id }}/artifacts/" >> _msg-${{ github.sha }}.txt 
+        echo -n "${{ inputs.artifact-id }}) :point_left:!" >> _msg-${{ github.sha }}.txt
       shell: bash
         
     - name: Get the event
@@ -60,14 +60,35 @@ runs:
                     return id
 
             return ''
-        with (open('_PR_COMMENT_ID', 'w')) as file:
+        with (open('_PR_COMMENT_ID-${{ github.sha }}', 'w')) as file:
             file.write(main('_events-${{ github.sha }}.json'))
 
       shell: python {0}
+
+    - name: Putting the contents of _msg.txt into an environment var
+      id: set-env
+      run: |
+        MSG=$(cat _msg-${{ github.sha }}.txt) >> $GITHUB_OUTPUT
+        COMMENT_ID=$(cat _PR_COMMENT_ID-${{ github.sha }}) >> $GITHUB_OUTPUT
+      shell: bash
 
     - name: Post comment preview
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         cat _PR_COMMENT_ID
-        gh pr comment ${{ github.event.number }} --body-file _msg.txt
+        gh api -H "Accept: application/vnd.github+json" \
+          ${{ github.repository}} \
+          -f query='
+          mutation UpdateIssueComment {
+            updateIssueComment(input: {
+              id: "${{ steps.set-env.outputs.COMMENT_ID }}",
+              body: "${{ steps.compose.outputs.MSG }}"
+            }) {
+              issueComment {
+                id
+                body
+              }
+            }
+          }
+          '
       shell: bash
