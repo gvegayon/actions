@@ -49,7 +49,7 @@ runs:
             for i in range(len(data['comments'])):
                 body = data['comments'][i]['body']
                 auth = data['comments'][i]['author']['login']
-                id = re.match(r'\d+$', data['comments'][i]['url'])
+                id = re.search(r'\d+$', data['comments'][i]['url'])
 
                 print(f"{ data['comments'][i]['url'] }")
                 print(f"Comment ID: {id}")
