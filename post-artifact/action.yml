@@ -51,13 +51,10 @@ runs:
                 auth = data['comments'][i]['author']['login']
                 id = re.search(r'\d+$', data['comments'][i]['url'])
 
-                print(f"{ data['comments'][i]['url'] }")
-                print(f"Comment ID: {id}")
-
                 if not id:
                     return ''
 
-                id = match.group()
+                id = id.group()
 
 
                 # Regex match to the body of the comment looking
