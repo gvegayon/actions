@@ -53,7 +53,7 @@ runs:
                 auth = data['comments'][i]['author']['login']
                 id   = re.match(r'\d+$', data['comments'][i]['url'])
 
-                if !match:
+                if not match:
                     return ''
 
                 id = match.group()
