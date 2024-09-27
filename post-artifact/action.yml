@@ -81,6 +81,6 @@ runs:
           --method PATCH \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          repos/${{ github.repository}}/pulls/${{ github.event.number }}/${{ steps.set-env.outputs.ID }} \
+          /repos/${{ github.repository}}/issues/comments/${{ steps.set-env.outputs.ID }} \
           -f body='${{ steps.set-env.outputs.MSG }}"'
       shell: bash
