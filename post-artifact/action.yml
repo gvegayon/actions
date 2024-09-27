@@ -75,13 +75,15 @@ runs:
     - name: Post comment preview
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        gh api -H "Accept: application/vnd.github+json" \
-          ${{ github.repository}} \
+        gh api \
+          --method PATCH \
+          -H "Accept: application/vnd.github+json" \
+          repos/${{ github.repository}}/pulls/${{ github.event.number }} \
           -f query='
           mutation UpdateIssueComment {
             updateIssueComment(input: {
               id: "${{ steps.set-env.outputs.ID }}",
-              body: "${{ steps.compose.outputs.MSG }}"
+              body: "${{ steps.set-env.outputs.MSG }}"
             }) {
               issueComment {
                 id
