@@ -72,24 +72,15 @@ runs:
         echo "ID=$(cat _PR_COMMENT_ID-${{ github.sha }})" >> $GITHUB_OUTPUT
       shell: bash
 
+    # See:
+    # https://docs.github.com/en/rest/issues/comments?apiVersion=2022-11-28#update-an-issue-comment
     - name: Post comment preview
       if: ${{ github.event_name == 'pull_request' }}
       run: |
         gh api \
           --method PATCH \
           -H "Accept: application/vnd.github+json" \
-          repos/${{ github.repository}}/pulls/${{ github.event.number }} \
-          -f query='
-          mutation UpdateIssueComment {
-            updateIssueComment(input: {
-              id: "${{ steps.set-env.outputs.ID }}",
-              body: "${{ steps.set-env.outputs.MSG }}"
-            }) {
-              issueComment {
-                id
-                body
-              }
-            }
-          }
-          '
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          repos/${{ github.repository}}/pulls/${{ github.event.number }}/${{ steps.set-env.outputs.ID }} \
+          -f body='${{ steps.set-env.outputs.MSG }}"'
       shell: bash
