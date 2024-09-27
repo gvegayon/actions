@@ -42,8 +42,6 @@ runs:
             with open(json_comments, 'r') as file:
                 data = json.load(file)
 
-            print(data)
-
             if (data['comments'] == []):
                 return ''
 
@@ -57,6 +55,8 @@ runs:
                     return ''
 
                 id = match.group()
+
+                print(f"Comment ID: {id}")
 
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
