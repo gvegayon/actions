@@ -82,5 +82,5 @@ runs:
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           /repos/${{ github.repository}}/issues/comments/${{ steps.set-env.outputs.ID }} \
-          -f "body='${{ steps.set-env.outputs.MSG }}'"'
+          -f "body=${{ steps.set-env.outputs.MSG }}"
       shell: bash
