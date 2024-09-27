@@ -49,13 +49,12 @@ runs:
             for i in range(len(data['comments'])):
                 body = data['comments'][i]['body']
                 auth = data['comments'][i]['author']['login']
-                id = re.search(r'\d+$', data['comments'][i]['url'])
+                match = re.search(r'\d+$', data['comments'][i]['url'])
 
-                if not id:
+                if not match:
                     return ''
 
-                id = id.group()
-
+                id = match.group()
 
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
