@@ -45,6 +45,9 @@ runs:
             if (data['comments'] == []):
                 return ''
 
+            # Generating matching string
+            matching_msg = "Thank you for your contribution ${{ github.actor}}"
+
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
                 body = data['comments'][i]['body']
@@ -60,15 +63,15 @@ runs:
                 print(f"url: {url}")
                 print(f"match: {match}")
                 print(f"auth: {auth}")
-                print(f'"Your preview" in body: { "Your preview" in body }')
+                print(f'matching_msg in body: { matching_msg in body }')
                 print(f'auth == "github-actions": {auth == "github-actions"}')
                 print(f'id: {id}')
-                print(("Your preview" in body) and (auth == 'github-actions'))
+                print((matching_msg in body) and (auth == 'github-actions'))
 
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
                 # if found, print the author and the body of the comment
-                if ("Your preview" in body) and (auth == 'github-actions'):
+                if (matching_msg in body) and (auth == 'github-actions'):
                     return id
 
             return ''
