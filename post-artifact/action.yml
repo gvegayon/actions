@@ -30,13 +30,13 @@ runs:
     - name: Compose message
       id: compose
       run: |
-        echo "${{ inputs.message }}" > _msg-${{ github.sha }}.txt
+        echo "${{ inputs.message }}" > msg-${{ github.sha }}.txt
         sed -i 's/{ artifact-name }/${{ inputs.artifact-name }}/g' \
-          _msg-${{ github.sha }}.txt
+          msg-${{ github.sha }}.txt
         sed -i 's/{ actor }/@${{ github.actor }}/g' \
-          _msg-${{ github.sha }}.txt
+          msg-${{ github.sha }}.txt
         sed -i 's|{ artifact-url }|${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}|g' \
-          _msg-${{ github.sha }}.txt
+          msg-${{ github.sha }}.txt
       shell: bash
         
     - name: Get the event
@@ -100,7 +100,7 @@ runs:
     - name: Putting the contents of _msg.txt into an environment var
       id: set-env
       run: |
-        echo "MSG=$(cat _msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
+        echo "MSG=$(cat msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
         echo "ID=$(cat _ID-${{ github.sha }})" >> $GITHUB_OUTPUT
         echo "FOUND=$(cat _ID-${{ github.sha }}_found)" >> $GITHUB_OUTPUT
       shell: bash
