@@ -52,12 +52,12 @@ runs:
                 url =  data['comments'][i]['url']
                 match = re.search(r'\d+$', url)
 
+                if not match:
+                    continue
+
                 print(f"url: {url}")
                 print(f"match: {match}")
                 print(f"auth: {auth}")
-
-                if not match:
-                    continue
 
                 id = match.group()
 
