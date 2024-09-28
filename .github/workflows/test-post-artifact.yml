@@ -11,7 +11,12 @@ on:
 jobs:
   build-artifact:
 
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
 
     permissions:
       contents: read
@@ -33,4 +38,4 @@ jobs:
         uses: ./post-artifact
         with:
           artifact-id: ${{ steps.readme.outputs.artifact-id }}
-          artifact-name: 'README file'
+          artifact-name: 'README file in ${{ matrix.os }}'

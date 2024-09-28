@@ -85,7 +85,8 @@ runs:
                 return ''
 
             # Generating matching string
-            matching_msg = "Thank you for your contribution @${{ github.actor}}"
+            matching_msg = "Thank you for your contribution " \
+              "@${{ github.actor}}:rocket:! Your ${{ inputs.artifact-name }}" 
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
