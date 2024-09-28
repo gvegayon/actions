@@ -55,16 +55,20 @@ runs:
                 if not match:
                     continue
 
+                id = match.group()
+
                 print(f"url: {url}")
                 print(f"match: {match}")
                 print(f"auth: {auth}")
-
-                id = match.group()
+                print(f'"Your preview" in body: { "Your preview" in body }')
+                print(f'auth == "github-actions": {auth == "github-actions"}')
+                print(f'id: {id}')
+                print(("Your preview" in body) and (auth == 'github-actions'))
 
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
                 # if found, print the author and the body of the comment
-                if "Your preview" in body and auth == 'github-actions':
+                if ("Your preview" in body) and (auth == 'github-actions'):
                     return id
 
             return ''
