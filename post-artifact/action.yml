@@ -4,7 +4,10 @@ description: |
   the comment.
 inputs:
   artifact-id:
-    description: The id of the artifact.
+    description: |
+      The id of the artifact. Should be the output from
+      `actions/upload-artifacts`. For example:
+      `artifact-id: ${{ steps.[name upload step].outputs.artifact-id }}`.
     required: true
   artifact-name:
     description: Message to include

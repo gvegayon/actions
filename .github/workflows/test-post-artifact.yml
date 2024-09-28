@@ -32,5 +32,5 @@ jobs:
       - name: Post the artifact
         uses: ./post-artifact
         with:
-          artifact-id: readme
+          artifact-id: ${{ steps.readme.outputs.artifact-id }}
           artifact-name: 'README file'
