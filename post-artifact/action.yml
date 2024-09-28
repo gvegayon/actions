@@ -10,16 +10,19 @@ inputs:
       steps.[name upload step].outputs.artifact-id .
     required: true
   artifact-name:
-    description: Message to include
+    description: Artifact name
     required: false
     default: 'artifact'
-  job-os:
+  message:
     description: |
-      The operating system to use. This overrides the default
-      operating system of the runner which may be useful when
-      the job is running on a container.
+      Message template to be posted in the PR. The message should include
+      the following placeholders: { actor }, { artifact-name },
+      and { artifact-url }. The { actor } placeholder will be replaced by
+      the actor's username. The { artifact-name } will be replaced by the
+      artifact name. The { artifact-url } will be replaced by the URL to
+      the artifact.
     required: false
-    default: ${{ runner.os}}
+    default: 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
 runs:
   using: 'composite'
   steps:
@@ -27,40 +30,11 @@ runs:
     - name: Compose message
       id: compose
       run: |
-        echo -n "Thank you for your contribution @${{ github.actor }}"> _msg-${{ github.sha }}.txt
-        echo -n ":rocket:! Your ${{ inputs.artifact-name }} is ready ">>_msg-${{ github.sha }}.txt
-        echo -n "for download :point_right: [here](" >> _msg-${{ github.sha }}.txt
-        echo -n "https://github.com/${{ github.repository }}/actions/">>_msg-${{ github.sha }}.txt
-        echo -n "runs/${{ github.run_id }}/artifacts/" >> _msg-${{ github.sha }}.txt 
-        echo -n "${{ inputs.artifact-id }}) :point_left:!" >> _msg-${{ github.sha }}.txt
-      shell: bash
-
-    # Verifies whether gh is installed and installs it if not
-    - name: Installing gh ubuntu
-      if: ${{ startsWith(inputs.runner-os, 'ubuntu') || startsWith(inputs.runner-os, 'linux') }}
-      run: |
-        if ! command -v gh &> /dev/null; then
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-          sudo apt-add-repository https://cli.github.com/packages
-          sudo apt update
-          sudo apt install gh
-        fi
-      shell: bash
-
-    - name: Installing gh windows
-      if: ${{ startsWith(inputs.runner-os, 'windows') }}
-      run: |
-        if ! command -v gh &> /dev/null; then
-          choco install gh
-        fi
-      shell: bash
-
-    - name: Installing gh macos
-      if: ${{ startsWith(inputs.runner-os, 'macos') }}
-      run: |
-        if ! command -v gh &> /dev/null; then
-          brew install gh
-        fi
+        echo ${{ inputs.message }} > _msg-${{ github.sha }}.txt
+        sed -i 's/{ actor }/@${{ github.actor }}/g' \
+          _msg-${{ github.sha }}.txt
+        sed -i 's/{ artifact-url }/${{ github.server_url }}\/${{ github.repository }}\/actions\/runs\/${{ github.run_id }}\/artifacts\/${{ inputs.artifact-id }}/g' \
+          _msg-${{ github.sha }}.txt
       shell: bash
         
     - name: Get the event

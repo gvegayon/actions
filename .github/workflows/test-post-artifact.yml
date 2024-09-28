@@ -9,6 +9,38 @@ on:
       - 'post-artifact/action.yml'
 
 jobs:
+  build-artifact-container:
+    runs-on: ubuntu-latest
+    container: rocker/r-ver:4.4.0
+
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout code
+
+      - uses: actions/upload-artifact@v4
+        name: Upload artifact
+        id: upload
+        with:
+          path: './README.md'
+          name: 'readme-rocker'
+
+      - name: Install gh
+        run: |
+          sudo apt update 
+          sudo apt install -y --no-install-recommends gh
+      
+      - name: Post the artifact
+        uses: ./post-artifact
+        with:
+          artifact-id: ${{ steps.upload.outputs.artifact-id }}
+          artifact-name: 'README file in rocker'
+  
   build-artifact:
 
     strategy:
