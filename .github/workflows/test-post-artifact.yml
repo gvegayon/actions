@@ -30,12 +30,13 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         name: Upload artifact
-        id: readme
+        id: upload
         with:
           path: './README.md'
+          name: ${{ format('readme-{0}', matrix.os) }}
 
       - name: Post the artifact
         uses: ./post-artifact
         with:
-          artifact-id: ${{ steps.readme.outputs.artifact-id }}
+          artifact-id: ${{ steps.upload.outputs.artifact-id }}
           artifact-name: 'README file in ${{ matrix.os }}'
