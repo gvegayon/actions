@@ -1,7 +1,7 @@
 name: post-artifact
 description: |
-  Creates a post in the PR linking to an artifact. Subsequent runs will update 
-  the comment.
+  Creates a post in the PR linking to an artifact.
+  Subsequent runs will update the comment.
 inputs:
   artifact-id:
     description: |
@@ -13,6 +13,13 @@ inputs:
     description: Message to include
     required: false
     default: 'artifact'
+  job-os:
+    description: |
+      The operating system to use. This overrides the default
+      operating system of the runner which may be useful when
+      the job is running on a container.
+    required: false
+    default: ${{ runner.os}}
 runs:
   using: 'composite'
   steps:
@@ -26,6 +33,34 @@ runs:
         echo -n "https://github.com/${{ github.repository }}/actions/">>_msg-${{ github.sha }}.txt
         echo -n "runs/${{ github.run_id }}/artifacts/" >> _msg-${{ github.sha }}.txt 
         echo -n "${{ inputs.artifact-id }}) :point_left:!" >> _msg-${{ github.sha }}.txt
+      shell: bash
+
+    # Verifies whether gh is installed and installs it if not
+    - name: Installing gh ubuntu
+      if: ${{ startsWith(inputs.runner-os, 'ubuntu') || startsWith(inputs.runner-os, 'linux') }}
+      run: |
+        if ! command -v gh &> /dev/null; then
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh
+        fi
+      shell: bash
+
+    - name: Installing gh windows
+      if: ${{ startsWith(inputs.runner-os, 'windows') }}
+      run: |
+        if ! command -v gh &> /dev/null; then
+          choco install gh
+        fi
+      shell: bash
+
+    - name: Installing gh macos
+      if: ${{ startsWith(inputs.runner-os, 'macos') }}
+      run: |
+        if ! command -v gh &> /dev/null; then
+          brew install gh
+        fi
       shell: bash
         
     - name: Get the event
