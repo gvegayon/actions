@@ -33,23 +33,17 @@ runs:
   using: 'composite'
   steps:
 
-    # - name: Compose message
-    #   id: compose
-    #   run: |
-    #     echo "${{ inputs.message }}" > msg-${{ github.sha }}.txt
-    #     sed -i 's/{ artifact-name }/${{ inputs.artifact-name }}/g' \
-    #       msg-${{ github.sha }}.txt
-    #     sed -i 's/{ actor }/@${{ github.actor }}/g' \
-    #       msg-${{ github.sha }}.txt
-    #     sed -i 's|{ artifact-url }|${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}|g' \
-    #       msg-${{ github.sha }}.txt
-    #   shell: bash
+    - name: Generating signature (goes to the output)
+      id: signature
+      run: |
+        echo "MSG_SIGNATURE=${{ inputs.artifact-name }}" >> $GITHUB_ENV
+      shell: bash
 
     - name: Compose message
       run: |
         import re
 
-        msg = "${{ inputs.message }}"
+        msg = "[](__ID__${{ inputs.artifact-name }})${{ inputs.message }}"
         
         updated = re.sub(
           r'{ artifact-name }', '${{ inputs.artifact-name }}', msg
@@ -90,9 +84,7 @@ runs:
             if (data['comments'] == []):
                 return ''
 
-            # Generating matching string
-            matching_msg = "Thank you for your contribution " \
-              "@${{ github.actor}}:rocket:! Your ${{ inputs.artifact-name }}" 
+            matching_msg = "[](__ID__${{ inputs.artifact-name }})"
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
@@ -153,6 +145,6 @@ runs:
           --method PATCH \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          repos/${{ github.repository}}/issues/comments/${{ steps.set-env.outputs.ID }} \
+          repos/${{ github.repository }}/issues/comments/${{ steps.set-env.outputs.ID }} \
           -f "body=${{ steps.set-env.outputs.MSG }}"
       shell: bash
