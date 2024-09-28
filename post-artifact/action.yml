@@ -23,6 +23,12 @@ inputs:
       the artifact.
     required: false
     default: 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
+  python:
+    description: |
+      The path to the Python executable. This input is optional and
+      defaults to 'python'.
+    required: false
+    default: 'python'
 runs:
   using: 'composite'
   steps:
@@ -61,7 +67,7 @@ runs:
         
         with open('msg-${{ github.sha }}.txt', 'w') as file:
             file.write(updated)
-      shell: python {0}
+      shell: ${{ inputs.python }} {0}
         
     - name: Get the event
       run: |
@@ -119,7 +125,7 @@ runs:
             else:
                 file.write('true')
 
-      shell: python {0}
+      shell: ${{ inputs.python }} {0}
 
     - name: Putting the contents of _msg.txt into an environment var
       id: set-env

@@ -11,7 +11,7 @@ on:
 jobs:
   build-artifact-container:
     runs-on: ubuntu-latest
-    container: rocker/r-ver:4.4.0
+    container: rocker/tidyverse:4.4.0
 
     permissions:
       contents: read
@@ -40,6 +40,7 @@ jobs:
         with:
           artifact-id: ${{ steps.upload.outputs.artifact-id }}
           artifact-name: 'README file in rocker'
+          python: 'python3'
   
   build-artifact:
 
