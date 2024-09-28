@@ -1,0 +1,36 @@
+name: Test PR post artifact
+
+on:
+  pull_request:
+    branches: [main]
+  pull_request_target: 
+    paths:
+      - '.github/workflows/test-post-artifact.yml'
+      - 'post-artifact/action.yml'
+
+jobs:
+  build-artifact:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout code
+
+      - uses: actions/upload-artifact@v4
+        name: Upload artifact
+        id: readme
+        with:
+          path: './README.md'
+
+      - name: Post the artifact
+        uses: ./post-artifact
+        with:
+          artifact-id: ${{ steps.readme.outputs.artifact-id }}
+          artifact-name: 'README file'
