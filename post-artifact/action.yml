@@ -1,6 +1,7 @@
 name: post-artifact
 description: |
-  Creates a post in the PR linking to an artifact.
+  Creates a post in the PR linking to an artifact. Subsequent runs will update 
+  the comment.
 inputs:
   artifact-id:
     description: The id of the artifact.
@@ -60,14 +61,6 @@ runs:
 
                 id = match.group()
 
-                print(f"url: {url}")
-                print(f"match: {match}")
-                print(f"auth: {auth}")
-                print(f'matching_msg in body: { matching_msg in body }')
-                print(f'auth == "github-actions": {auth == "github-actions"}')
-                print(f'id: {id}')
-                print((matching_msg in body) and (auth == 'github-actions'))
-
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
                 # if found, print the author and the body of the comment
@@ -102,7 +95,7 @@ runs:
     - name: Add comment
       if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'false' }}
       run: |
-        echo "The value of FOUND and id is ${{ steps.set-env.outputs.FOUND }} and ${{ steps.set-env.outputs.ID }}"
+        echo "No comment from github-bot found, adding a new one."
         gh pr comment -R ${{ github.repository }} \
           ${{ github.event.number }} -b "${{ steps.set-env.outputs.MSG }}"
       shell: bash
@@ -110,7 +103,7 @@ runs:
     - name: Update comment
       if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'true' }}
       run: |
-        echo "The value of FOUND and id is ${{ steps.set-env.outputs.FOUND }} and ${{ steps.set-env.outputs.ID }}"
+        echo "Editing original comment id: ${{ steps.set-env.outputs.ID }}."
         gh api \
           --method PATCH \
           -H "Accept: application/vnd.github+json" \
