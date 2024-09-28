@@ -27,17 +27,42 @@ runs:
   using: 'composite'
   steps:
 
+    # - name: Compose message
+    #   id: compose
+    #   run: |
+    #     echo "${{ inputs.message }}" > msg-${{ github.sha }}.txt
+    #     sed -i 's/{ artifact-name }/${{ inputs.artifact-name }}/g' \
+    #       msg-${{ github.sha }}.txt
+    #     sed -i 's/{ actor }/@${{ github.actor }}/g' \
+    #       msg-${{ github.sha }}.txt
+    #     sed -i 's|{ artifact-url }|${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}|g' \
+    #       msg-${{ github.sha }}.txt
+    #   shell: bash
+
     - name: Compose message
-      id: compose
       run: |
-        echo "${{ inputs.message }}" > msg-${{ github.sha }}.txt
-        sed -i 's/{ artifact-name }/${{ inputs.artifact-name }}/g' \
-          msg-${{ github.sha }}.txt
-        sed -i 's/{ actor }/@${{ github.actor }}/g' \
-          msg-${{ github.sha }}.txt
-        sed -i 's|{ artifact-url }|${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}|g' \
-          msg-${{ github.sha }}.txt
-      shell: bash
+        import re
+
+        with open('msg-${{ github.sha }}.txt', 'r') as file:
+            msg = file.read()
+        
+        updated = re.sub(
+          r'{ artifact-name }', '${{ inputs.artifact-name }}', msg
+          )
+        
+        updated = re.sub(
+          r'{ actor }', '@${{ github.actor }}', updated
+          )
+        
+        updated = re.sub(
+          r'{ artifact-url }',
+          '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}',
+          updated
+          )
+        
+        with open('msg-${{ github.sha }}.txt', 'w') as file:
+            file.write(updated)
+      shell: python {0}
         
     - name: Get the event
       run: |
