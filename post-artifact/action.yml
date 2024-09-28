@@ -43,7 +43,8 @@ runs:
       run: |
         import re
 
-        msg = "[](__ID__${{ inputs.artifact-name }})${{ inputs.message }}"
+        msg = re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')
+        msg = msg + "${{ inputs.message }}"
         
         updated = re.sub(
           r'{ artifact-name }', '${{ inputs.artifact-name }}', msg
@@ -84,7 +85,8 @@ runs:
             if (data['comments'] == []):
                 return ''
 
-            matching_msg = "[](__ID__${{ inputs.artifact-name }})"
+            msg = re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')
+            matching_msg = msg + "${{ inputs.message }}"
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
