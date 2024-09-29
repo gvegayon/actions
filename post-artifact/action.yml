@@ -105,6 +105,11 @@ runs:
                     
                 match = re.search(r'\d+$', url)
 
+                print(f'URL: {url}')
+                print(f'AUTHOR: {auth}')
+                print(f'BODY: {body}')
+                print(f'MATCH: {match}')
+
                 if not match:
                     continue
 
