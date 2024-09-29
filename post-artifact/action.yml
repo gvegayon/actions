@@ -67,7 +67,7 @@ runs:
           repos/${{ github.repository }}/issues/${{ github.event.number }}/comments > _events-${{ github.sha }}.json
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Get comment preview
       run: |
@@ -149,7 +149,7 @@ runs:
           ${{ github.event.number }} -b "${{ steps.set-env.outputs.MSG }}"
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Update comment
       if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'true' }}
@@ -163,4 +163,4 @@ runs:
           -f "body=${{ steps.set-env.outputs.MSG }}"
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
