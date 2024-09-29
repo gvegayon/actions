@@ -91,7 +91,7 @@ runs:
             for i in range(len(data['comments'])):
 
                 print(f'Comment {i+1}:')
-                print(f'data['comments'][i].get('body') {data['comments'][i].get('body')}')
+                print(f"data['comments'][i].get('body') {data['comments'][i].get('body')}")
 
                 body = data['comments'][i].get('body')
                 auth = data['comments'][i].get('author')['login']
