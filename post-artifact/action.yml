@@ -67,8 +67,10 @@ runs:
     - name: Get the event
       run: |
         gh pr view -R ${{ github.repository }} \
-          ${{ github.event.number }} -c --json comments > \
+          ${{ github.event.number }} -c --json comments,url > \
           _events-${{ github.sha }}.json
+        
+        cat _events-${{ github.sha }}.json
       shell: bash
 
     - name: Get comment preview
