@@ -90,12 +90,21 @@ runs:
         echo "VALUE=$(cat '${{ github.sha }}_artifact_id')" >> $GITHUB_OUTPUT
       shell: bash
 
+    - name: Putting message in a single file
+      run: |
+        echo "${{ inputs.message }}" > template-${{ github.sha }}.txt
+      shell: bash
+
     - name: Compose message
       run: |
         import re
 
         msg = "[]("+ re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
-        msg = msg + "${{ inputs.message }}"
+        
+        with open('template-${{ github.sha }}.txt', 'r') as file:
+            template_msg = file.read()
+
+        msg = msg + template_msg
 
         updated = re.sub(
           r'{ artifact-name }',
