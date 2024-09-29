@@ -49,7 +49,7 @@ runs:
 
         def find_artifact() -> str:
             fn = '_artifacts-${{ github.sha }}.json'
-            with (fn, 'r')) as file:
+            with open(fn, 'r') as file:
                 data = json.load(file)
 
             for i in range(len(data)):
