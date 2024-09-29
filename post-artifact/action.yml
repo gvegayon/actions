@@ -68,7 +68,7 @@ runs:
                     continue
 
                 if '${{ inputs.artifact-name }}' == name:
-                    return id
+                    return str(id)
             return ''
 
         id = find_artifact()
