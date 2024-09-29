@@ -29,6 +29,7 @@ runs:
 
   steps:
 
+    # https://docs.github.com/en/rest/actions/artifacts?apiVersion=2022-11-28#list-workflow-run-artifacts
     - name: List artifacts
       run: |
         gh api \
