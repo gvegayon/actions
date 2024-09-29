@@ -4,10 +4,10 @@
 
 | Field         | Description                                                                                                                             | Required | Default        |
 |---------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------|----------------|
-| artifact-name | Artifact name                                                                                                                           | false    | 'artifact'     |
-| message       | Message template to be posted in the PR. The message should include a placeholder for { artifact-url }. Optionally, the { artifact-name } placeholder can be used to include the artifact name in the message. | false    | 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!' |
-| python        | The path to the Python executable. This input is optional and defaults to 'python'.                                                   | false    | 'python'       |
-| gh-token      | The GitHub token to use for the API calls. | true | - |
+| `gh-token`      | The GitHub token to use for the API calls. | true | - |
+| `artifact-name` | Artifact name | true    | -     |
+| `message`       | Message template to be posted in the PR. The message should include a placeholder for { artifact-url }. Optionally, the { artifact-name } placeholder can be used to include the artifact name in the message. | false    | `'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'` |
+| `python`        | The path to the Python executable. | false    | `'python'`       |
 
 ## Example: Post artifact created within a job
 
