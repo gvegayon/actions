@@ -31,8 +31,7 @@ inputs:
     default: 'python'
   gh-token:
     description: |
-      The GitHub token to use for the API calls. This input is optional
-      and defaults to secrets.GITHUB_TOKEN.
+      The GitHub token to use for the API calls. 
     required: true
 runs:
   using: 'composite'

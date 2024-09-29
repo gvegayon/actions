@@ -8,6 +8,7 @@
 | artifact-name | Artifact name                                                                                                                           | false    | 'artifact'     |
 | message       | Message template to be posted in the PR. The message should include the following placeholders: { actor }, { artifact-name }, and { artifact-url }. The { actor } placeholder will be replaced by the actor's username. The { artifact-name } will be replaced by the artifact name. The { artifact-url } will be replaced by the URL to the artifact. | false    | 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!' |
 | python        | The path to the Python executable. This input is optional and defaults to 'python'.                                                   | false    | 'python'       |
+| gh-token      | The GitHub token to use for the API calls. | true | - |
 
 ## Example: Post artifact created within a job
 
@@ -19,8 +20,6 @@ Here are the contents of a job that (i) uploads an artifact using `actions/uploa
     permissions:
       contents: read
       pull-requests: write
-    env:
-      GH_TOKEN: ${{ github.token }}
 
     steps:
       - uses: actions/checkout@v4
@@ -40,6 +39,7 @@ Here are the contents of a job that (i) uploads an artifact using `actions/uploa
         with:
           artifact-id: ${{ steps.readme.outputs.artifact-id }}
           artifact-name: 'README file'
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 For a live example, see [../.github/workflows/test-post-artifact.yml](../.github/workflows/test-post-artifact.yml).
@@ -80,8 +80,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    env:
-      GH_TOKEN: ${{ github.token }}
 
     steps:
       # Post the artifact pulling the id from the `readme` step.
@@ -91,5 +89,6 @@ jobs:
         with:
           artifact-id: ${{ needs.build.outputs.artifact-id }}
           artifact-name: 'README file'
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
 
 ```
