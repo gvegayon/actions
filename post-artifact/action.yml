@@ -85,23 +85,17 @@ runs:
             with open(json_comments, 'r') as file:
                 data = json.load(file)
 
-            if (data['comments'] == []):
+            if (data == []):
                 return ''
 
             matching_msg = re.escape("[]("+re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")")
 
             # Now you can work with the 'data' object
-            for i in range(len(data['comments'])):
+            for i in range(len(data)):
 
-                body = data['comments'][i].get('body')
-                auth = data['comments'][i].get('author')['login']
-                url =  data['comments'][i].get('url')
-
-                print(f'data[\'comments\'][{i}]: {data["comments"][i]}')
-                print(f're.search({matching_msg}, {body}) and re.match(r\'^github-actions\', {auth})')
-                print(f'body: {body}')
-                print(f'auth: {auth}')
-                print(f'url: {url}')
+                body = data[i].get('body')
+                auth = data[i].get('author')['login']
+                url =  data[i].get('url')
 
                 if not url:
                     continue
