@@ -85,8 +85,7 @@ runs:
             if (data['comments'] == []):
                 return ''
 
-            msg = "[]("+re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
-            matching_msg = msg + "${{ inputs.message }}"
+            matching_msg = "[]("+re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
@@ -104,10 +103,6 @@ runs:
                     continue
                     
                 match = re.search(r'\d+$', url)
-
-                print(f'matching_msg: {matching_msg}')
-                print(f'body: {body}')
-                print(f'matching_msg in body: {matching_msg in body}')
 
                 if not match:
                     continue
