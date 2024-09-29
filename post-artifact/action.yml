@@ -110,6 +110,8 @@ runs:
 
                 id = match.group()
 
+                print(f're.search({matching_msg}, {body}) and re.match(r\'^github-actions\', {auth})')
+
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
                 # if found, print the author and the body of the comment
