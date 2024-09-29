@@ -10,13 +10,9 @@ inputs:
   message:
     description: |
       Message template to be posted in the PR. The message should include
-      the following placeholders: { actor }, { artifact-name },
-      and { artifact-url }. The { actor } placeholder will be replaced by
-      the actor's username. The { artifact-name } will be replaced by the
-      artifact name. The { artifact-url } will be replaced by the URL to
-      the artifact.
+      a placeholder for { artifact-url }.
     required: false
-    default: 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
+    default: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your artifact is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
   python:
     description: |
       The path to the Python executable. This input is optional and
@@ -94,14 +90,6 @@ runs:
 
         msg = "[]("+ re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
         msg = msg + "${{ inputs.message }}"
-        
-        updated = re.sub(
-          r'{ artifact-name }', '${{ inputs.artifact-name }}', msg
-          )
-        
-        updated = re.sub(
-          r'{ actor }', '@${{ github.actor }}', updated
-          )
         
         updated = re.sub(
           r'{ artifact-url }',
