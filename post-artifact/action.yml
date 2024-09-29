@@ -94,6 +94,12 @@ runs:
                 auth = data['comments'][i].get('author')['login']
                 url =  data['comments'][i].get('url')
 
+                print(f'data[\'comments\'][{i}]: {data["comments"][i]}')
+                print(f're.search({matching_msg}, {body}) and re.match(r\'^github-actions\', {auth})')
+                print(f'body: {body}')
+                print(f'auth: {auth}')
+                print(f'url: {url}')
+
                 if not url:
                     continue
 
@@ -109,8 +115,6 @@ runs:
                     continue
 
                 id = match.group()
-
-                print(f're.search({matching_msg}, {body}) and re.match(r\'^github-actions\', {auth})')
 
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
