@@ -35,7 +35,7 @@ jobs:
       - name: Post the artifact
         uses: ./post-artifact
         with:
-          artifact-name: 'README file in rocker'
+          artifact-name: 'readme-rocker'
           python: 'python3'
           gh-token: ${{ secrets.GITHUB_TOKEN }}
   
@@ -65,5 +65,5 @@ jobs:
       - name: Post the artifact
         uses: ./post-artifact
         with:
-          artifact-name: 'README file in ${{ matrix.os }}'
+          artifact-name: ${{ format('readme-{0}', matrix.os) }}
           gh-token: ${{ secrets.GITHUB_TOKEN }}
