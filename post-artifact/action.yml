@@ -85,7 +85,7 @@ runs:
             if (data['comments'] == []):
                 return ''
 
-            matching_msg = "[]("+re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
+            matching_msg = re.escape("[]("+re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")")
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
