@@ -73,6 +73,8 @@ runs:
 
         id = find_artifact()
 
+        print(f'Artifact ID: {id}')
+
         with open('${{ github.sha }}_artifact_id', 'w') as file:
             file.write(id)
       shell: ${{ inputs.python }} "{0}"
@@ -80,6 +82,7 @@ runs:
     - name: Get artifact id
       id: artifact-id
       run: |
+        cat '${{ github.sha }}_artifact_id'
         echo "VALUE=$(cat '${{ github.sha }}_artifact_id')" \
           >> $GITHUB_OUTPUT
       shell: bash
