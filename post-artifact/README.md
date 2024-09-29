@@ -6,7 +6,7 @@
 |---------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------|----------------|
 | `gh-token`      | The GitHub token to use for the API calls. | true | - |
 | `artifact-name` | Artifact name as in the `actions/upload-artifact` step. | false    | `artifact`     |
-| `message`       | Message template to be posted in the PR. The message should include a placeholder for { artifact-url }. Optionally, the { artifact-name } placeholder can be used to include the artifact name in the message. | false    | `'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'` |
+| `message`       | Message template to be posted in the PR. The message should include a placeholder for { artifact-url }. Optionally, the { artifact-name } placeholder can be used to include the artifact name in the message. | false    | `'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'` |
 | `python`        | The path to the Python executable. | false    | `'python'`       |
 
 ## Example: Post artifact created within a job
@@ -37,6 +37,7 @@ Here are the contents of a job that (i) uploads an artifact using `actions/uploa
         with:
           artifact-name: readme
           gh-token: ${{ secrets.GITHUB_TOKEN }}
+          message: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
 ```
 
 For a live example, see [../.github/workflows/test-post-artifact.yml](../.github/workflows/test-post-artifact.yml).
