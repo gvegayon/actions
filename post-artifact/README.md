@@ -1,4 +1,4 @@
-# Post artifact as a comment
+# Post artifact as a comment [![Test PR post artifact](https://github.com/gvegayon/actions/actions/workflows/test-post-artifact.yml/badge.svg)](https://github.com/gvegayon/actions/actions/workflows/test-post-artifact.yml)
 
 ## Inputs
 
