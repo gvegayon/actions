@@ -1,10 +1,12 @@
 name: post-artifact
 description: |
-  Creates a post in the PR linking to an artifact.
+  Creates a post in the PR linking to an artifact for easy access.
   Subsequent runs will update the comment.
 inputs:
   artifact-name:
-    description: Artifact name
+    description: |
+      Name of the artifact to upload (should match the one passed to
+      `actions/upload-artifact`).
     required: false
     default: 'artifact'
   message:
