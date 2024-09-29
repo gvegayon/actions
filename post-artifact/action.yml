@@ -46,6 +46,7 @@ runs:
       run: |
         import re
         import json
+        import sys
 
         def find_artifact() -> str:
             fn = '_artifacts-${{ github.sha }}.json'
@@ -73,7 +74,9 @@ runs:
 
         id = find_artifact()
 
-        print(f'Artifact ID: {id}')
+        if id == '':
+            print(f"Artifact '${{ inputs.artifact-name }}' not found.")
+            sys.exit(1)
 
         with open('${{ github.sha }}_artifact_id', 'w') as file:
             file.write(id)
@@ -82,17 +85,7 @@ runs:
     - name: Get artifact id
       id: artifact-id
       run: |
-        cat '${{ github.sha }}_artifact_id'
-        echo "VALUE=$(cat '${{ github.sha }}_artifact_id')" \
-          >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: Check if artifact was found
-      run: |
-        if [ -z "${{ steps.artifact-id.outputs.ARTIFACT_ID }}" ]; then
-            echo "Artifact not found."
-            exit 1
-        fi
+        echo "VALUE=$(cat '${{ github.sha }}_artifact_id')" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Compose message
