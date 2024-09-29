@@ -39,6 +39,7 @@ jobs:
           artifact-id: ${{ steps.upload.outputs.artifact-id }}
           artifact-name: 'README file in rocker'
           python: 'python3'
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
   
   build-artifact:
 
@@ -69,3 +70,4 @@ jobs:
         with:
           artifact-id: ${{ steps.upload.outputs.artifact-id }}
           artifact-name: 'README file in ${{ matrix.os }}'
+          gh-token: ${{ secrets.GITHUB_TOKEN }}

@@ -33,8 +33,7 @@ inputs:
     description: |
       The GitHub token to use for the API calls. This input is optional
       and defaults to secrets.GITHUB_TOKEN.
-    required: false
-    default: ${{ secrets.GITHUB_TOKEN }}
+    required: true
 runs:
   using: 'composite'
 
