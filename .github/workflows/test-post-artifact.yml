@@ -16,8 +16,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    env:
-      GH_TOKEN: ${{ github.token }}
 
     steps:
       - uses: actions/checkout@v4
@@ -54,8 +52,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    env:
-      GH_TOKEN: ${{ github.token }}
 
     steps:
       - uses: actions/checkout@v4

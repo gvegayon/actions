@@ -1,5 +1,14 @@
 # Post artifact as a comment
 
+## Inputs
+
+| Field         | Description                                                                                                                             | Required | Default        |
+|---------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------|----------------|
+| artifact-id   | The id of the artifact. Should be the output from `actions/upload-artifacts`. For example: steps.[name upload step].outputs.artifact-id | true     | -              |
+| artifact-name | Artifact name                                                                                                                           | false    | 'artifact'     |
+| message       | Message template to be posted in the PR. The message should include the following placeholders: { actor }, { artifact-name }, and { artifact-url }. The { actor } placeholder will be replaced by the actor's username. The { artifact-name } will be replaced by the artifact name. The { artifact-url } will be replaced by the URL to the artifact. | false    | 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!' |
+| python        | The path to the Python executable. This input is optional and defaults to 'python'.                                                   | false    | 'python'       |
+
 ## Example: Post artifact created within a job
 
 Here are the contents of a job that (i) uploads an artifact using `actions/upload-artifact` and (ii) posts the artifact as a comment using this action. The action requires the runner to have: `python` and `gh cli` installed.
