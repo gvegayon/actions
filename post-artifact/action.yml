@@ -94,7 +94,7 @@ runs:
             for i in range(len(data)):
 
                 body = data[i].get('body')
-                auth = data[i].get('author')['login']
+                auth = data[i].get('user').get('login')
                 url =  data[i].get('url')
 
                 if not url:
@@ -116,7 +116,7 @@ runs:
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
                 # if found, print the author and the body of the comment
-                if (re.search(matching_msg, body)) and (re.match(r'^github-actions', auth)):
+                if (re.search(matching_msg, body)) and (re.match(r'^github-actions\[bot\]', auth)):
                     return id
 
             return ''
