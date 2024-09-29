@@ -204,7 +204,7 @@ runs:
     - name: Putting the contents of _msg.txt into an environment var
       id: set-env
       run: |
-        echo "MSG=$(cat msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
+        echo "MSG=\"$(cat msg-${{ github.sha }}.txt)\"" >> $GITHUB_OUTPUT
         echo "ID=$(cat _ID-${{ github.sha }})" >> $GITHUB_OUTPUT
         echo "FOUND=$(cat _ID-${{ github.sha }}_found)" >> $GITHUB_OUTPUT
       shell: bash
