@@ -10,9 +10,10 @@ inputs:
   message:
     description: |
       Message template to be posted in the PR. The message should include
-      a placeholder for { artifact-url }.
+      a placeholder for { artifact-url }. Optionally, the { artifact-name }
+      placeholder can be used to include the artifact name in the message.
     required: false
-    default: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your ${{ inputs.artifact-name }} is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
+    default: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } artifact is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
   python:
     description: |
       The path to the Python executable. This input is optional and
@@ -90,6 +91,19 @@ runs:
 
         msg = "[]("+ re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
         msg = msg + "${{ inputs.message }}"
+
+        updated = re.sub(
+          r'{ artifact-name }',
+          '${{ inputs.artifact-name }}',
+          msg
+          )
+
+        if not re.search(r'{ artifact-url }', updated):
+            print(
+              "The message template must include the placeholder " \
+              "{ artifact-url }."
+              )
+            sys.exit(1)
         
         updated = re.sub(
           r'{ artifact-url }',
