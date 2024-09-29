@@ -5,7 +5,7 @@
 | Field         | Description                                                                                                                             | Required | Default        |
 |---------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------|----------------|
 | `gh-token`      | The GitHub token to use for the API calls. | true | - |
-| `artifact-name` | Artifact name | true    | -     |
+| `artifact-name` | Artifact name as in the `actions/upload-artifact` step. | false    | `artifact`     |
 | `message`       | Message template to be posted in the PR. The message should include a placeholder for { artifact-url }. Optionally, the { artifact-name } placeholder can be used to include the artifact name in the message. | false    | `'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'` |
 | `python`        | The path to the Python executable. | false    | `'python'`       |
 
