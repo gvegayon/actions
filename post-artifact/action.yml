@@ -55,6 +55,9 @@ runs:
             artifacts = data.get('artifacts')
 
             for i in range(len(artifacts)):
+
+                print(f"Artifact: {artifacts[i]}")
+
                 name = artifacts[i].get('name')
                 id = artifacts[i].get('id')
 
@@ -68,8 +71,10 @@ runs:
                     return id
             return ''
 
+        id = find_artifact()
+
         with open('${{ github.sha }}_artifact_id', 'w') as file:
-            file.write(find_artifact())
+            file.write(id)
       shell: ${{ inputs.python }} "{0}"
 
     - name: Get artifact id
@@ -77,7 +82,10 @@ runs:
       run: |
         echo "VALUE=$(cat '${{ github.sha }}_artifact_id')" \
           >> $GITHUB_OUTPUT
+      shell: bash
 
+    - name: Check if artifact was found
+      run: |
         if [ -z "${{ steps.artifact-id.outputs.ARTIFACT_ID }}" ]; then
             echo "Artifact not found."
             exit 1
