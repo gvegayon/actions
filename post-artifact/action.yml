@@ -89,6 +89,10 @@ runs:
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
+
+                print(f'Comment {i+1}:')
+                print(f'data['comments'][i].get('body') {data['comments'][i].get('body')}')
+
                 body = data['comments'][i].get('body')
                 auth = data['comments'][i].get('author')['login']
                 url =  data['comments'][i].get('url')
