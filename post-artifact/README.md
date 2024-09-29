@@ -9,6 +9,8 @@
 | `message`       | Message template to be posted in the PR. The message should include a placeholder for { artifact-url }. Optionally, the { artifact-name } placeholder can be used to include the artifact name in the message. | false    | `'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'` |
 | `python`        | The path to the Python executable. | false    | `'python'`       |
 
+This action only runs in PRs and requires the `pull-requests: write` permission. 
+
 ## Example: Post artifact created within a job
 
 Here are the contents of a job that (i) uploads an artifact using `actions/upload-artifact` and (ii) posts the artifact as a comment using this action. The action requires the runner to have: `python` and `gh cli` installed.
