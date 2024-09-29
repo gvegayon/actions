@@ -29,6 +29,12 @@ inputs:
       defaults to 'python'.
     required: false
     default: 'python'
+  gh-token:
+    description: |
+      The GitHub token to use for the API calls. This input is optional
+      and defaults to secrets.GITHUB_TOKEN.
+    required: false
+    default: ${{ secrets.GITHUB_TOKEN }}
 runs:
   using: 'composite'
 
@@ -67,7 +73,7 @@ runs:
           repos/${{ github.repository }}/issues/${{ github.event.number }}/comments > _events-${{ github.sha }}.json
       shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.gh-token }}
 
     - name: Get comment preview
       run: |
@@ -149,7 +155,7 @@ runs:
           ${{ github.event.number }} -b "${{ steps.set-env.outputs.MSG }}"
       shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.gh-token }}
     
     - name: Update comment
       if: ${{ github.event_name == 'pull_request' && steps.set-env.outputs.FOUND == 'true' }}
@@ -163,4 +169,4 @@ runs:
           -f "body=${{ steps.set-env.outputs.MSG }}"
       shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ inputs.gh-token }}
