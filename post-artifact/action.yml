@@ -90,9 +90,13 @@ runs:
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
-                body = data['comments'][i]['body']
-                auth = data['comments'][i]['author']['login']
-                url =  data['comments'][i]['url']
+                body = data['comments'][i].ge('body')
+                auth = data['comments'][i].get('author')['login']
+                url =  data['comments'][i].get('url')
+
+                if (not url) || (not body) || (not auth):
+                    continue
+
                 match = re.search(r'\d+$', url)
 
                 if not match:
