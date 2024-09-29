@@ -23,7 +23,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         name: Upload artifact
-        id: upload
         with:
           path: './README.md'
           name: 'readme-rocker'
@@ -36,7 +35,6 @@ jobs:
       - name: Post the artifact
         uses: ./post-artifact
         with:
-          artifact-id: ${{ steps.upload.outputs.artifact-id }}
           artifact-name: 'README file in rocker'
           python: 'python3'
           gh-token: ${{ secrets.GITHUB_TOKEN }}
@@ -60,7 +58,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         name: Upload artifact
-        id: upload
         with:
           path: './README.md'
           name: ${{ format('readme-{0}', matrix.os) }}
@@ -68,6 +65,5 @@ jobs:
       - name: Post the artifact
         uses: ./post-artifact
         with:
-          artifact-id: ${{ steps.upload.outputs.artifact-id }}
           artifact-name: 'README file in ${{ matrix.os }}'
           gh-token: ${{ secrets.GITHUB_TOKEN }}
