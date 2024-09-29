@@ -94,9 +94,15 @@ runs:
                 auth = data['comments'][i].get('author')['login']
                 url =  data['comments'][i].get('url')
 
-                if (not url) || (not body) || (not auth):
+                if not url:
                     continue
 
+                if not auth:
+                    continue
+
+                if not body:
+                    continue
+                    
                 match = re.search(r'\d+$', url)
 
                 if not match:
