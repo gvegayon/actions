@@ -1,7 +1,7 @@
 name: post-artifact
 description: |
-  Creates a post in the PR linking to an artifact. Subsequent runs will update 
-  the comment.
+  Creates a post in the PR linking to an artifact.
+  Subsequent runs will update the comment.
 inputs:
   artifact-id:
     description: |
@@ -10,29 +10,66 @@ inputs:
       steps.[name upload step].outputs.artifact-id .
     required: true
   artifact-name:
-    description: Message to include
+    description: Artifact name
     required: false
     default: 'artifact'
+  message:
+    description: |
+      Message template to be posted in the PR. The message should include
+      the following placeholders: { actor }, { artifact-name },
+      and { artifact-url }. The { actor } placeholder will be replaced by
+      the actor's username. The { artifact-name } will be replaced by the
+      artifact name. The { artifact-url } will be replaced by the URL to
+      the artifact.
+    required: false
+    default: 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
+  python:
+    description: |
+      The path to the Python executable. This input is optional and
+      defaults to 'python'.
+    required: false
+    default: 'python'
 runs:
   using: 'composite'
   steps:
 
-    - name: Compose message
-      id: compose
+    - name: Generating signature (goes to the output)
+      id: signature
       run: |
-        echo -n "Thank you for your contribution @${{ github.actor }}"> _msg-${{ github.sha }}.txt
-        echo -n ":rocket:! Your ${{ inputs.artifact-name }} is ready ">>_msg-${{ github.sha }}.txt
-        echo -n "for download :point_right: [here](" >> _msg-${{ github.sha }}.txt
-        echo -n "https://github.com/${{ github.repository }}/actions/">>_msg-${{ github.sha }}.txt
-        echo -n "runs/${{ github.run_id }}/artifacts/" >> _msg-${{ github.sha }}.txt 
-        echo -n "${{ inputs.artifact-id }}) :point_left:!" >> _msg-${{ github.sha }}.txt
+        echo "MSG_SIGNATURE=${{ inputs.artifact-name }}" >> $GITHUB_ENV
       shell: bash
+
+    - name: Compose message
+      run: |
+        import re
+
+        msg = "[]("+ re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
+        msg = msg + "${{ inputs.message }}"
+        
+        updated = re.sub(
+          r'{ artifact-name }', '${{ inputs.artifact-name }}', msg
+          )
+        
+        updated = re.sub(
+          r'{ actor }', '@${{ github.actor }}', updated
+          )
+        
+        updated = re.sub(
+          r'{ artifact-url }',
+          '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}',
+          updated
+          )
+        
+        with open('msg-${{ github.sha }}.txt', 'w') as file:
+            file.write(updated)
+      shell: ${{ inputs.python }} {0}
         
     - name: Get the event
       run: |
-        gh pr view -R ${{ github.repository }} \
-          ${{ github.event.number }} -c --json comments > \
-          _events-${{ github.sha }}.json
+        gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          repos/${{ github.repository }}/issues/${{ github.event.number }}/comments > _events-${{ github.sha }}.json
       shell: bash
 
     - name: Get comment preview
@@ -46,17 +83,27 @@ runs:
             with open(json_comments, 'r') as file:
                 data = json.load(file)
 
-            if (data['comments'] == []):
+            if (data == []):
                 return ''
 
-            # Generating matching string
-            matching_msg = "Thank you for your contribution @${{ github.actor}}"
+            matching_msg = re.escape("[]("+re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")")
 
             # Now you can work with the 'data' object
-            for i in range(len(data['comments'])):
-                body = data['comments'][i]['body']
-                auth = data['comments'][i]['author']['login']
-                url =  data['comments'][i]['url']
+            for i in range(len(data)):
+
+                body = data[i].get('body')
+                auth = data[i].get('user').get('login')
+                url =  data[i].get('url')
+
+                if not url:
+                    continue
+
+                if not auth:
+                    continue
+
+                if not body:
+                    continue
+                    
                 match = re.search(r'\d+$', url)
 
                 if not match:
@@ -67,7 +114,7 @@ runs:
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
                 # if found, print the author and the body of the comment
-                if (matching_msg in body) and (auth == 'github-actions'):
+                if (re.search(matching_msg, body)) and (re.match(r'^github-actions\[bot\]', auth)):
                     return id
 
             return ''
@@ -83,12 +130,12 @@ runs:
             else:
                 file.write('true')
 
-      shell: python {0}
+      shell: ${{ inputs.python }} {0}
 
     - name: Putting the contents of _msg.txt into an environment var
       id: set-env
       run: |
-        echo "MSG=$(cat _msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
+        echo "MSG=$(cat msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
         echo "ID=$(cat _ID-${{ github.sha }})" >> $GITHUB_OUTPUT
         echo "FOUND=$(cat _ID-${{ github.sha }}_found)" >> $GITHUB_OUTPUT
       shell: bash
@@ -111,6 +158,6 @@ runs:
           --method PATCH \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          /repos/${{ github.repository}}/issues/comments/${{ steps.set-env.outputs.ID }} \
+          repos/${{ github.repository }}/issues/comments/${{ steps.set-env.outputs.ID }} \
           -f "body=${{ steps.set-env.outputs.MSG }}"
       shell: bash

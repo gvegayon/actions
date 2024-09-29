@@ -2,8 +2,7 @@
 
 ## Example: Post artifact created within a job
 
-Here are the contents of a job that (i) uploads an artifact using `actions/upload-artifact` and (ii)
-posts the artifact as a comment using this action.
+Here are the contents of a job that (i) uploads an artifact using `actions/upload-artifact` and (ii) posts the artifact as a comment using this action. The action requires the runner to have: `python` and `gh cli` installed.
 
 
 ```yaml
