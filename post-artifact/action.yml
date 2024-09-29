@@ -90,9 +90,6 @@ runs:
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
 
-                print(f'Comment {i+1}:')
-                print(f"data['comments'][i].get('body') {data['comments'][i].get('body')}")
-
                 body = data['comments'][i].get('body')
                 auth = data['comments'][i].get('author')['login']
                 url =  data['comments'][i].get('url')
@@ -116,7 +113,7 @@ runs:
                 # Regex match to the body of the comment looking
                 # for the expression "Thank you for your contribution"
                 # if found, print the author and the body of the comment
-                if (matching_msg in body) and (auth == 'github-actions'):
+                if (re.search(matching_msg, body)) and (re.match(r'^github-actions', auth)):
                     return id
 
             return ''
