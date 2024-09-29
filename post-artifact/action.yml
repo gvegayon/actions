@@ -52,9 +52,11 @@ runs:
             with open(fn, 'r') as file:
                 data = json.load(file)
 
-            for i in range(len(data)):
-                name = data[i].get('name')
-                id = data[i].get('id')
+            artifacts = data.get('artifacts')
+
+            for i in range(len(artifacts)):
+                name = artifacts[i].get('name')
+                id = artifacts[i].get('id')
 
                 if not name:
                     continue
