@@ -90,7 +90,7 @@ runs:
 
             # Now you can work with the 'data' object
             for i in range(len(data['comments'])):
-                body = data['comments'][i].ge('body')
+                body = data['comments'][i].get('body')
                 auth = data['comments'][i].get('author')['login']
                 url =  data['comments'][i].get('url')
 
