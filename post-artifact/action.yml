@@ -31,15 +31,9 @@ runs:
 
   steps:
 
-    - name: Only for PRs!
-      if: ${{ github.event_name != 'pull_request' }}
-      run: |
-        echo "This action only works on pull requests."
-        exit 0
-      shell: bash
-
     # https://docs.github.com/en/rest/actions/artifacts?apiVersion=2022-11-28#list-workflow-run-artifacts
     - name: List artifacts
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         gh api \
           -H "Accept: application/vnd.github+json" \
@@ -50,6 +44,7 @@ runs:
         GH_TOKEN: ${{ inputs.gh-token }}
 
     - name: Id artifact
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         import re
         import json
@@ -90,12 +85,14 @@ runs:
       shell: ${{ inputs.python }} "{0}"
 
     - name: Get artifact id
+      if: ${{ github.event_name == 'pull_request' }}
       id: artifact-id
       run: |
         echo "VALUE=$(cat '${{ github.sha }}_artifact_id')" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Compose message
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         import re
 
@@ -126,6 +123,7 @@ runs:
       shell: ${{ inputs.python }} {0}
         
     - name: Get the event
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         gh api \
           -H "Accept: application/vnd.github+json" \
@@ -136,6 +134,7 @@ runs:
         GH_TOKEN: ${{ inputs.gh-token }}
 
     - name: Get comment preview
+      if: ${{ github.event_name == 'pull_request' }}
       run: |
         import json
         import re
@@ -198,6 +197,7 @@ runs:
       shell: ${{ inputs.python }} {0}
 
     - name: Putting the contents of _msg.txt into an environment var
+      if: ${{ github.event_name == 'pull_request' }}
       id: set-env
       run: |
         echo "MSG=$(cat msg-${{ github.sha }}.txt)" >> $GITHUB_OUTPUT
