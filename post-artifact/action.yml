@@ -3,12 +3,6 @@ description: |
   Creates a post in the PR linking to an artifact.
   Subsequent runs will update the comment.
 inputs:
-  artifact-id:
-    description: |
-      The id of the artifact. Should be the output from
-      `actions/upload-artifacts`. For example:
-      steps.[name upload step].outputs.artifact-id .
-    required: true
   artifact-name:
     description: Artifact name
     required: false
@@ -16,13 +10,10 @@ inputs:
   message:
     description: |
       Message template to be posted in the PR. The message should include
-      the following placeholders: { actor }, { artifact-name },
-      and { artifact-url }. The { actor } placeholder will be replaced by
-      the actor's username. The { artifact-name } will be replaced by the
-      artifact name. The { artifact-url } will be replaced by the URL to
-      the artifact.
+      a placeholder for { artifact-url }. Optionally, the { artifact-name }
+      placeholder can be used to include the artifact name in the message.
     required: false
-    default: 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
+    default: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
   python:
     description: |
       The path to the Python executable. This input is optional and
@@ -38,24 +29,86 @@ runs:
 
   steps:
 
+    # https://docs.github.com/en/rest/actions/artifacts?apiVersion=2022-11-28#list-workflow-run-artifacts
+    - name: List artifacts
+      run: |
+        gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts > _artifacts-${{ github.sha }}.json
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.gh-token }}
+
+    - name: Id artifact
+      run: |
+        import re
+        import json
+        import sys
+
+        def find_artifact() -> str:
+            fn = '_artifacts-${{ github.sha }}.json'
+            with open(fn, 'r') as file:
+                data = json.load(file)
+
+            artifacts = data.get('artifacts')
+
+            for i in range(len(artifacts)):
+
+                print(f"Artifact: {artifacts[i]}")
+
+                name = artifacts[i].get('name')
+                id = artifacts[i].get('id')
+
+                if not name:
+                    continue
+
+                if not id:
+                    continue
+
+                if '${{ inputs.artifact-name }}' == name:
+                    return str(id)
+            return ''
+
+        id = find_artifact()
+
+        if id == '':
+            print(f"Artifact '${{ inputs.artifact-name }}' not found.")
+            sys.exit(1)
+
+        with open('${{ github.sha }}_artifact_id', 'w') as file:
+            file.write(id)
+      shell: ${{ inputs.python }} "{0}"
+
+    - name: Get artifact id
+      id: artifact-id
+      run: |
+        echo "VALUE=$(cat '${{ github.sha }}_artifact_id')" >> $GITHUB_OUTPUT
+      shell: bash
+
     - name: Compose message
       run: |
         import re
 
         msg = "[]("+ re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
         msg = msg + "${{ inputs.message }}"
-        
+
         updated = re.sub(
-          r'{ artifact-name }', '${{ inputs.artifact-name }}', msg
+          r'{ artifact-name }',
+          '${{ inputs.artifact-name }}',
+          msg
           )
-        
-        updated = re.sub(
-          r'{ actor }', '@${{ github.actor }}', updated
-          )
+
+        if not re.search(r'{ artifact-url }', updated):
+            print(
+              "The message template must include the placeholder " \
+              "{ artifact-url }."
+              )
+            sys.exit(1)
         
         updated = re.sub(
           r'{ artifact-url }',
-          '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ inputs.artifact-id }}',
+          '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-id.outputs.VALUE }}',
           updated
           )
         

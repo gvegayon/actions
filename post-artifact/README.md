@@ -4,9 +4,8 @@
 
 | Field         | Description                                                                                                                             | Required | Default        |
 |---------------|-----------------------------------------------------------------------------------------------------------------------------------------|----------|----------------|
-| artifact-id   | The id of the artifact. Should be the output from `actions/upload-artifacts`. For example: steps.[name upload step].outputs.artifact-id | true     | -              |
 | artifact-name | Artifact name                                                                                                                           | false    | 'artifact'     |
-| message       | Message template to be posted in the PR. The message should include the following placeholders: { actor }, { artifact-name }, and { artifact-url }. The { actor } placeholder will be replaced by the actor's username. The { artifact-name } will be replaced by the artifact name. The { artifact-url } will be replaced by the URL to the artifact. | false    | 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!' |
+| message       | Message template to be posted in the PR. The message should include a placeholder for { artifact-url }. Optionally, the { artifact-name } placeholder can be used to include the artifact name in the message. | false    | 'Thank you for your contribution { actor } :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!' |
 | python        | The path to the Python executable. This input is optional and defaults to 'python'.                                                   | false    | 'python'       |
 | gh-token      | The GitHub token to use for the API calls. | true | - |
 
@@ -25,20 +24,18 @@ Here are the contents of a job that (i) uploads an artifact using `actions/uploa
       - uses: actions/checkout@v4
         name: Checkout code
 
-      # Uploading an artifact with id 'readme'
+      # Uploading an artifact with name 'readme'
       - uses: actions/upload-artifact@v4
         name: Upload artifact
-        id: readme
         with:
           path: './README.md'
+          name: readme
 
       # Post the artifact pulling the id from the `readme` step.
-      # The msg will refer to the arfitact as 'README file'.
       - name: Post the artifact
         uses: gvegayon/actions/post-artifact
         with:
-          artifact-id: ${{ steps.readme.outputs.artifact-id }}
-          artifact-name: 'README file'
+          artifact-name: readme
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
@@ -66,9 +63,9 @@ jobs:
       # Uploading an artifact with id 'readme'
       - uses: actions/upload-artifact@v4
         name: Upload artifact
-        id: upload
         with:
           path: './README.md'
+          name: readme
 
   post:
     runs-on: ubuntu-latest
@@ -87,8 +84,7 @@ jobs:
       - name: Post the artifact
         uses: gvegayon/actions/post-artifact
         with:
-          artifact-id: ${{ needs.build.outputs.artifact-id }}
-          artifact-name: 'README file'
+          artifact-name: readme
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 
 ```
