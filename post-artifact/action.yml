@@ -15,7 +15,7 @@ inputs:
       a placeholder for { artifact-url }. Optionally, the { artifact-name }
       placeholder can be used to include the artifact name in the message.
     required: false
-    default: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
+    default: 'Thank you for your contribution @${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
   python:
     description: |
       The path to the Python executable. This input is optional and
@@ -94,8 +94,10 @@ runs:
     - name: Compose message
       if: ${{ github.event_name == 'pull_request' }}
       run: |
-        ${{ inputs.python }} ${{ github.action_path }}/scripts/compose-msg.py
-      shell: bash
+        from pathlib import Path
+        filepath = Path('${{ github.action_path }}') / 'scripts' / 'compose-msg.py'
+        exec(open(filepath).read())
+      shell: ${{ inputs.python }} {0}
       env:
         ARTIFACT_NAME: ${{ inputs.artifact-name }}
         MESSAGE: ${{ inputs.message }}
