@@ -93,7 +93,7 @@ runs:
 
     - name: Compose message
       if: ${{ github.event_name == 'pull_request' }}
-      run: $GITHUB_ACTION_PATH/scripts/compose-msg.py
+      run: ${GITHUB_ACTION_PATH}/scripts/compose-msg.py
       shell: ${{ inputs.python }} 
       env:
         ARTIFACT_NAME: ${{ inputs.artifact-name }}
