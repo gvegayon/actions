@@ -45,7 +45,7 @@ runs:
 
     - name: Id artifact
       if: ${{ github.event_name == 'pull_request' }}
-      run: $ {{ inputs.python }} ${GITHUB_ACTION_PATH}/scripts/id-artifact.py
+      run: ${{ inputs.python }} ${GITHUB_ACTION_PATH}/scripts/id-artifact.py
       shell: bash
       env:
         ARTIFACT_NAME: ${{ inputs.artifact-name }}
