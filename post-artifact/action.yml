@@ -15,7 +15,7 @@ inputs:
       a placeholder for { artifact-url }. Optionally, the { artifact-name }
       placeholder can be used to include the artifact name in the message.
     required: false
-    default: 'Thank you for your contribution ${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
+    default: 'Thank you for your contribution @${{ github.actor }} :rocket:! Your { artifact-name } is ready for download :point_right: [here]({ artifact-url }) :point_left:!'
   python:
     description: |
       The path to the Python executable. This input is optional and
@@ -45,44 +45,11 @@ runs:
 
     - name: Id artifact
       if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        import re
-        import json
-        import sys
-
-        def find_artifact() -> str:
-            fn = '_artifacts-${{ github.sha }}.json'
-            with open(fn, 'r') as file:
-                data = json.load(file)
-
-            artifacts = data.get('artifacts')
-
-            for i in range(len(artifacts)):
-
-                print(f"Artifact: {artifacts[i]}")
-
-                name = artifacts[i].get('name')
-                id = artifacts[i].get('id')
-
-                if not name:
-                    continue
-
-                if not id:
-                    continue
-
-                if '${{ inputs.artifact-name }}' == name:
-                    return str(id)
-            return ''
-
-        id = find_artifact()
-
-        if id == '':
-            print(f"Artifact '${{ inputs.artifact-name }}' not found.")
-            sys.exit(1)
-
-        with open('${{ github.sha }}_artifact_id', 'w') as file:
-            file.write(id)
-      shell: ${{ inputs.python }} "{0}"
+      run: ${{ inputs.python }} ${GITHUB_ACTION_PATH}/scripts/id-artifact.py
+      shell: bash
+      env:
+        ARTIFACT_NAME: ${{ inputs.artifact-name }}
+        SHA: ${{ github.sha }}
 
     - name: Get artifact id
       if: ${{ github.event_name == 'pull_request' }}
@@ -93,34 +60,16 @@ runs:
 
     - name: Compose message
       if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        import re
-
-        msg = "[]("+ re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
-        msg = msg + "${{ inputs.message }}"
-
-        updated = re.sub(
-          r'{ artifact-name }',
-          '${{ inputs.artifact-name }}',
-          msg
-          )
-
-        if not re.search(r'{ artifact-url }', updated):
-            print(
-              "The message template must include the placeholder " \
-              "{ artifact-url }."
-              )
-            sys.exit(1)
-        
-        updated = re.sub(
-          r'{ artifact-url }',
-          '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts/${{ steps.artifact-id.outputs.VALUE }}',
-          updated
-          )
-        
-        with open('msg-${{ github.sha }}.txt', 'w') as file:
-            file.write(updated)
-      shell: ${{ inputs.python }} {0}
+      run: ${{ inputs.python }} ${GITHUB_ACTION_PATH}/scripts/compose-msg.py
+      shell: bash
+      env:
+        ARTIFACT_NAME: ${{ inputs.artifact-name }}
+        MESSAGE: ${{ inputs.message }}
+        SERVER_URL: ${{ github.server_url }}
+        REPOSITORY: ${{ github.repository }}
+        RUN_ID: ${{ github.run_id }}
+        ARTIFACT_ID: ${{ steps.artifact-id.outputs.VALUE }}
+        SHA: ${{ github.sha }}
         
     - name: Get the event
       if: ${{ github.event_name == 'pull_request' }}
@@ -133,68 +82,13 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.gh-token }}
 
-    - name: Get comment preview
+    - name: Find the comment
       if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        import json
-        import re
-
-        def main(json_comments) -> str:
-
-            # Open the JSON file and load its contents into a Python object
-            with open(json_comments, 'r') as file:
-                data = json.load(file)
-
-            if (data == []):
-                return ''
-
-            matching_msg = re.escape(
-                "[](" + re.sub(r'\s+', '_', '${{ inputs.artifact-name }}')+")"
-                )
-
-            # Now you can work with the 'data' object
-            for i in range(len(data)):
-
-                body = data[i].get('body')
-                auth = data[i].get('user').get('login')
-                url =  data[i].get('url')
-
-                if not url:
-                    continue
-
-                if not auth:
-                    continue
-
-                if not body:
-                    continue
-                    
-                match = re.search(r'\d+$', url)
-
-                if not match:
-                    continue
-
-                id = match.group()
-
-                # Regex match to the body of the comment looking
-                # for the expression "Thank you for your contribution"
-                # if found, print the author and the body of the comment
-                if (re.search(matching_msg, body)) and (re.match(r'^github-actions\[bot\]', auth)):
-                    return id
-
-            return ''
-
-        id = main('_events-${{ github.sha }}.json')
-        fn = '_ID-${{ github.sha }}'
-        with (open(fn, 'w')) as file:
-            file.write(id)
-
-        with (open(fn+'_found', 'w')) as file:
-            if id == '':
-                file.write('false')
-            else:
-                file.write('true')
-
-      shell: ${{ inputs.python }} {0}
+      run: ${{ inputs.python }} ${GITHUB_ACTION_PATH}/scripts/find-comment.py
+      shell: bash
+      env:
+        SHA: ${{ github.sha }}
+        ARTIFACT_NAME: ${{ inputs.artifact-name }}
 
     - name: Putting the contents of _msg.txt into an environment var
       if: ${{ github.event_name == 'pull_request' }}
