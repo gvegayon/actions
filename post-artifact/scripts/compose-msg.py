@@ -30,8 +30,8 @@ if not re.search(r'{ artifact-url }', updated):
 
 updated = re.sub(
     r'{ artifact-url }',
-    SERVER_URL + '/' REPOSITORY + '/actions/runs/' + RUN_ID + '/artifacts/' +
-    ARTIFACT_ID,
+    SERVER_URL + '/' REPOSITORY + '/actions/runs/' + RUN_ID + \
+        '/artifacts/' + ARTIFACT_ID,
     updated
     ß)
 
