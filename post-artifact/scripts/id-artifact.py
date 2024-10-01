@@ -1,6 +1,7 @@
 import re
 import json
 import sys
+import os
 
 # Retrieving environment variables
 ARTIFACT_NAME = os.environ.get('ARTIFACT_NAME')
