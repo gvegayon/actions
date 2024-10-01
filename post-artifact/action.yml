@@ -93,11 +93,8 @@ runs:
 
     - name: Compose message
       if: ${{ github.event_name == 'pull_request' }}
-      run: |
-        from pathlib import Path
-        filepath = Path('${{ github.action_path }}') / 'scripts' / 'compose-msg.py'
-        exec(open(filepath).read())
-      shell: ${{ inputs.python }} {0}
+      run: '${{ github.action_path }}/scripts/compose-msg.py'
+      shell: ${{ inputs.python }} 
       env:
         ARTIFACT_NAME: ${{ inputs.artifact-name }}
         MESSAGE: ${{ inputs.message }}
