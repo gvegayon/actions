@@ -33,7 +33,7 @@ updated = re.sub(
     SERVER_URL + '/' + REPOSITORY + '/actions/runs/' + RUN_ID + \
         '/artifacts/' + ARTIFACT_ID,
     updated
-    ß)
+    )
 
 with open('msg-' + SHA + '.txt', 'w') as file:
     file.write(updated)
