@@ -35,7 +35,7 @@ Here are the contents of a job that (i) uploads an artifact using `actions/uploa
 
       # Post the artifact pulling the id from the `readme` step.
       - name: Post the artifact
-        uses: gvegayon/actions/post-artifact
+        uses: gvegayon/actions/post-artifact@main
         with:
           artifact-name: readme
           gh-token: ${{ secrets.GITHUB_TOKEN }}
@@ -85,7 +85,7 @@ jobs:
       # Post the artifact pulling the id from the `readme` step.
       # The msg will refer to the arfitact as 'README file'.
       - name: Post the artifact
-        uses: gvegayon/actions/post-artifact
+        uses: gvegayon/actions/post-artifact@main
         with:
           artifact-name: readme
           gh-token: ${{ secrets.GITHUB_TOKEN }}
